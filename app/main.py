@@ -94,8 +94,7 @@ async def predict_batch(batch: BatchFeatures, background_tasks: BackgroundTasks)
     start_time = time.time()
     
     try:
-        # Convert to list of dicts
-        flights_data = [f.dict() for f in batch.flights]
+        flights_data: List[Dict[str, Any]] = [f.dict() for f in batch.flights]
         
         # Log request
         background_tasks.add_task(
@@ -123,7 +122,7 @@ async def predict_batch(batch: BatchFeatures, background_tasks: BackgroundTasks)
 @app.get("/model/info")
 async def model_info():
     """Get model information"""
-    if not model.loaded:
+    if not model.loaded or model.artifacts is None:
         raise HTTPException(status_code=503, detail="Model not loaded")
     
     return {
